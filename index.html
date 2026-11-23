@@ -1,1 +1,1588 @@
-Pending
+```html
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eduardus Andri Sukmajati — Portofolio Jurnalistik Mata Publik</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Newsreader & Playfair Display (Editorial Serif) + Plus Jakarta Sans (Clean Sans-Serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Newsreader"', '"Playfair Display"', 'Georgia', 'serif'],
+                        display: ['"Playfair Display"', 'Georgia', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        paper: '#FAF8F5',
+                        paperDark: '#F2EEE8',
+                        ink: '#1C1917',
+                        inkMuted: '#57534E',
+                        terracotta: {
+                            DEFAULT: '#9B2C2C',
+                            dark: '#742A2A',
+                            light: '#C53030',
+                            soft: '#FFF5F5'
+                        },
+                        forest: {
+                            DEFAULT: '#1B4332',
+                            light: '#2D6A4F',
+                            soft: '#ECFDF5'
+                        },
+                        earth: {
+                            DEFAULT: '#B45309',
+                            light: '#D97706'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Kustomisasi tipografi dan nuansa kertas koran hangat editorial */
+        body {
+            background-color: #FAF8F5;
+            color: #1C1917;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .editorial-double-border {
+            border-top: 3px double #1C1917;
+            border-bottom: 1px solid #D6D3D1;
+        }
+
+        /* Animasi halus untuk modal dan transisi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+
+        /* Indikator mode edit langsung */
+        [contenteditable="true"] {
+            outline: 2px dashed #9B2C2C;
+            outline-offset: 4px;
+            background-color: rgba(254, 243, 199, 0.55);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-paper text-ink selection:bg-terracotta selection:text-white">
+
+    <!-- ==================== NOTIFICATION TOAST ==================== -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-ink text-paper px-4 py-3 rounded-xl shadow-2xl border border-stone-700 flex items-center gap-3 transition-all duration-300">
+        <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+        <p id="toast-message" class="text-sm font-medium leading-snug"></p>
+    </div>
+
+    <!-- ==================== HEADER & NAVIGASI ==================== -->
+    <header class="sticky top-0 z-40 bg-paper/95 backdrop-blur-md border-b border-stone-200">
+        <!-- Top Editorial Dateline Bar -->
+        <div class="bg-ink text-stone-300 text-xs py-1.5 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="font-medium tracking-wide">Kabupaten Asmat, Provinsi Papua Selatan</span>
+                </div>
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <span class="hidden sm:inline text-stone-400">Portofolio Jurnalistik &bull; Mata Publik</span>
+                    <button id="admin-pin-btn" type="button" onclick="handleAdminButtonClick()" class="inline-flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 font-semibold transition cursor-pointer">
+                        <i id="admin-pin-icon" data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        <span id="admin-pin-label">Kunci PIN Admin</span>
+                    </button>
+                    <button id="toggle-edit-btn" type="button" onclick="toggleEditMode()" class="hidden inline-flex items-center gap-1.5 text-amber-300 hover:text-amber-200 font-semibold transition cursor-pointer">
+                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                        <span id="edit-btn-label">Edit Profil</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navbar -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <!-- Brand / Nama Jurnalis -->
+                <a href="#" class="flex flex-col group">
+                    <span class="font-display text-xl sm:text-2xl font-bold tracking-tight text-ink group-hover:text-terracotta transition">
+                        Eduardus Andri Sukmajati
+                    </span>
+                    <span class="text-[11px] sm:text-xs uppercase tracking-widest text-inkMuted font-semibold">
+                        Jurnalis Mata Publik &bull; Wakil Sekretaris DPC HKTI Asmat
+                    </span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-7 text-sm font-medium text-stone-700">
+                    <a href="#tentang" class="hover:text-terracotta transition py-2">Profil Penulis</a>
+                    <a href="#karya" class="hover:text-terracotta transition py-2">Daftar Karya</a>
+                    <a href="#fokus" class="hover:text-terracotta transition py-2">Fokus Liputan</a>
+                    <a href="#kontak" class="hover:text-terracotta transition py-2">Kontak</a>
+                    <a href="https://wa.me/6281357691710?text=Halo%20Mas%20Eduardus%20Andri,%20saya%20tertarik%20berdiskusi%20terkait%20liputan/kolaborasi." target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 bg-forest hover:bg-forest-light text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" type="button" aria-label="Buka Menu" class="md:hidden p-2.5 rounded-xl text-ink hover:bg-stone-200/70 transition">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-paper border-b border-stone-200 px-4 pt-2 pb-5 space-y-2 shadow-lg">
+            <a href="#tentang" class="mobile-link block px-3 py-2.5 rounded-xl text-base font-medium text-ink hover:bg-paperDark">Profil Penulis</a>
+            <a href="#karya" class="mobile-link block px-3 py-2.5 rounded-xl text-base font-medium text-ink hover:bg-paperDark">Daftar Karya Jurnalistik</a>
+            <a href="#fokus" class="mobile-link block px-3 py-2.5 rounded-xl text-base font-medium text-ink hover:bg-paperDark">Fokus Liputan</a>
+            <a href="#kontak" class="mobile-link block px-3 py-2.5 rounded-xl text-base font-medium text-ink hover:bg-paperDark">Kontak &amp; Kolaborasi</a>
+            <div class="pt-2">
+                <a href="https://wa.me/6281357691710?text=Halo%20Mas%20Eduardus%20Andri,%20saya%20tertarik%20berdiskusi%20terkait%20liputan/kolaborasi." target="_blank" rel="noopener noreferrer"
+                   class="w-full flex justify-center items-center gap-2 bg-forest text-white px-4 py-3 rounded-xl font-semibold">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    <span>Hubungi via WhatsApp (0815-7691-710)</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner Panel Admin (Hanya Muncul Setelah Verifikasi PIN) -->
+    <div id="admin-panel-banner" class="hidden bg-forest text-white px-4 py-2.5 text-xs sm:text-sm font-medium border-b border-emerald-900">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-amber-300 shrink-0"></i>
+                <span><strong>Mode Admin Aktif:</strong> Kelola foto profil, edit teks profil, tambah/hapus karya, atau ganti PIN.</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="openPinModal('change')" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-amber-200 font-semibold transition cursor-pointer">
+                    Ganti PIN
+                </button>
+                <button type="button" onclick="lockAdminMode()" class="px-3 py-1 rounded-lg bg-terracotta hover:bg-terracotta-dark text-white font-semibold transition cursor-pointer">
+                    Kunci Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner Info Mode Edit -->
+    <div id="edit-mode-banner" class="hidden bg-amber-100 border-b border-amber-300 text-amber-950 px-4 py-2.5 text-center text-xs sm:text-sm font-medium">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-3">
+            <span><strong>Mode Edit Aktif:</strong> Klik pada teks profil (nama, jabatan, bio, atau fokus liputan) untuk menyunting secara langsung.</span>
+            <button type="button" onclick="resetProfileEdits()" class="underline font-bold text-terracotta hover:text-terracotta-dark cursor-pointer">Reset ke Teks Asli</button>
+        </div>
+    </div>
+
+    <!-- ==================== HERO & PROFIL PENULIS ==================== -->
+    <section id="tentang" class="pt-8 pb-14 sm:pt-14 sm:pb-20 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
+        <div class="max-w-6xl mx-auto">
+            <!-- Garis Khas Editorial -->
+            <div class="editorial-double-border py-2 mb-8 sm:mb-12 flex flex-wrap justify-between items-center text-xs uppercase tracking-widest text-inkMuted font-semibold gap-2">
+                <span>Portofolio Jurnalistik Resmi</span>
+                <span>Media: Mata Publik &bull; Kabupaten Asmat, Papua Selatan</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                <!-- Kolom Teks Utama (7 kolom) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-terracotta-soft border border-red-200 text-terracotta text-xs sm:text-sm font-semibold">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                        <span id="editable-location" class="editable-field">Kabupaten Asmat, Papua Selatan</span>
+                    </div>
+
+                    <h1 id="editable-name" class="editable-field font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-ink leading-[1.12] tracking-tight">
+                        Eduardus Andri Sukmajati
+                    </h1>
+
+                    <p id="editable-role" class="editable-field text-lg sm:text-xl font-semibold text-forest">
+                        Jurnalis Mata Publik &bull; Wakil Sekretaris DPC HKTI Kabupaten Asmat
+                    </p>
+
+                    <!-- Bio Resmi Sesuai Dokumen -->
+                    <div class="bg-white/80 border-l-4 border-terracotta p-4 sm:p-5 rounded-r-xl shadow-xs">
+                        <span class="block text-[11px] font-bold uppercase tracking-widest text-inkMuted mb-1.5">Profil Penulis</span>
+                        <p id="editable-bio" class="editable-field text-base sm:text-[17px] text-stone-800 leading-relaxed font-normal">
+                            Eduardus Andri Sukmajati adalah seorang jurnalis media Mata Publik yang aktif meliput isu-isu pembangunan daerah, ekonomi kerakyatan, ketahanan pangan, serta dinamika sosial-kemasyarakatan di wilayah pesisir dan perairan Kabupaten Asmat, Papua Selatan. Selain mendedikasikan diri di dunia jurnalistik, ia juga aktif dalam penguatan sektor pertanian dan pangan lokal sebagai Wakil Sekretaris DPC Himpunan Kerukunan Tani Indonesia (HKTI) Kabupaten Asmat.
+                        </p>
+                    </div>
+
+                    <!-- Fokus Liputan Utama -->
+                    <div class="bg-paperDark/90 border border-stone-200/90 p-4 rounded-xl">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-terracotta-soft text-terracotta flex items-center justify-center shrink-0 mt-0.5 border border-red-200">
+                                <i data-lucide="compass" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-terracotta">Fokus Liputan Utama</span>
+                                <p id="editable-focus-summary" class="editable-field text-sm sm:text-base font-medium text-ink mt-0.5">
+                                    Ekonomi Kerakyatan, Ketahanan Pangan Lokal, Sosial-Keagamaan, &amp; Pembangunan Wilayah (Kabupaten Asmat, Papua Selatan)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tombol CTA -->
+                    <div class="pt-1 flex flex-col sm:flex-row gap-3.5">
+                        <a href="#karya" class="inline-flex justify-center items-center gap-2 bg-terracotta hover:bg-terracotta-dark text-white px-6 py-3.5 rounded-xl font-semibold text-sm sm:text-base shadow-md hover:shadow-lg transition">
+                            <i data-lucide="newspaper" class="w-4 h-4"></i>
+                            <span>Lihat Daftar Karya Jurnalistik</span>
+                        </a>
+                        <a href="https://wa.me/6281357691710?text=Halo%20Mas%20Eduardus%20Andri,%20saya%20ingin%20berkomunikasi%20terkait%20liputan%20atau%20kolaborasi." target="_blank" rel="noopener noreferrer"
+                           class="inline-flex justify-center items-center gap-2 bg-white hover:bg-paperDark text-ink border border-stone-300 px-6 py-3.5 rounded-xl font-semibold text-sm sm:text-base shadow-sm transition">
+                            <i data-lucide="phone-call" class="w-4 h-4 text-forest"></i>
+                            <span>Hubungi via WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Kolom Foto Profil Editorial (5 kolom) -->
+                <div class="lg:col-span-5">
+                    <div class="relative max-w-md mx-auto">
+                        <!-- Dekorasi Frame Editorial -->
+                        <div class="absolute -inset-2.5 bg-paperDark border border-stone-300 rounded-2xl -rotate-2"></div>
+                        <div class="relative bg-white p-3 sm:p-4 rounded-2xl border border-stone-300 shadow-md">
+                            <div onclick="handlePhotoClick()" title="Foto Profil Eduardus Andri Sukmajati" class="group aspect-[4/5] w-full overflow-hidden rounded-xl bg-stone-200 relative">
+                                <img id="profile-photo-img"
+                                     src="https://placehold.co/600x750/1B4332/FAF8F5?text=Eduardus+Andri+Sukmajati%0AJurnalis+Mata+Publik"
+                                     alt="Foto Profil Eduardus Andri Sukmajati"
+                                     onerror="this.src='https://placehold.co/600x750/292524/FAF8F5?text=Eduardus+Andri+S.'"
+                                     class="w-full h-full object-cover transition duration-300">
+
+                                <!-- Tombol Kamera Melayang di Pojok Kanan Atas Foto (Hanya Muncul Saat Admin Terbuka) -->
+                                <button id="admin-photo-camera-btn" type="button" onclick="event.stopPropagation(); openPhotoModal();"
+                                        class="hidden inline-flex items-center gap-1.5 absolute top-3 right-3 bg-ink/85 hover:bg-terracotta text-white px-3 py-2 rounded-xl text-xs font-semibold shadow-lg backdrop-blur-sm border border-white/15 transition cursor-pointer">
+                                    <i data-lucide="camera" class="w-3.5 h-3.5 text-amber-300"></i>
+                                    <span>Ubah Foto</span>
+                                </button>
+
+                                <!-- Kutipan Editorial di atas foto -->
+                                <div class="absolute bottom-3 left-3 right-3 bg-ink/85 backdrop-blur-sm text-paper p-3.5 rounded-xl border border-stone-700 pointer-events-none">
+                                    <p class="font-serif text-sm italic leading-snug">
+                                        "Meliput dari pesisir dan perairan Kabupaten Asmat: menyuarakan pembangunan daerah, pangan lokal, dan kemanusiaan."
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between text-xs text-inkMuted px-1">
+                                <span class="font-medium">Media: Mata Publik</span>
+                                <button id="admin-photo-link-btn" type="button" onclick="openPhotoModal()" class="hidden inline-flex items-center gap-1 font-semibold text-terracotta hover:text-terracotta-dark transition cursor-pointer">
+                                    <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                                    <span>Ganti Foto Profil</span>
+                                </button>
+                                <span id="visitor-photo-caption" class="text-inkMuted">Asmat, Papua Selatan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== DAFTAR KARYA JURNALISTIK ==================== -->
+    <section id="karya" class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-paperDark/65 border-b border-stone-200">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header Section & Tombol Aksi -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-terracotta">Publikasi Terverifikasi &bull; Mata Publik</span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold text-ink mt-1">Daftar Karya Jurnalistik</h2>
+                    <p class="text-inkMuted text-sm sm:text-base mt-2 max-w-2xl">
+                        Arsip liputan berita dan laporan jurnalistik karya Eduardus Andri Sukmajati. Klik salah satu karya untuk membaca ringkasan atau membuka tautan artikel asli di portal <strong>Mata Publik</strong>.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5 self-start md:self-auto shrink-0">
+                    <button id="reset-articles-btn" type="button" onclick="openResetArticlesModal()" class="hidden inline-flex items-center gap-1.5 bg-white hover:bg-stone-100 text-stone-700 border border-stone-300 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition cursor-pointer">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4 text-terracotta"></i>
+                        <span>Pulihkan Karya Bawaan</span>
+                    </button>
+                    <button id="add-article-btn" type="button" onclick="openAddModal()" class="hidden inline-flex items-center gap-2 bg-ink hover:bg-stone-800 text-paper px-5 py-3 rounded-xl text-sm font-semibold shadow-sm transition cursor-pointer">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-amber-400"></i>
+                        <span>+ Tambah Karya Baru</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Kategori -->
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-8" id="category-filters">
+                <button type="button" data-category="Semua" class="filter-btn active px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-terracotta text-white shadow-sm transition cursor-pointer">
+                    Semua Karya
+                </button>
+                <button type="button" data-category="Ekonomi & Pangan" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-stone-700 border border-stone-300 hover:border-terracotta hover:text-terracotta transition cursor-pointer">
+                    Ekonomi &amp; Pangan
+                </button>
+                <button type="button" data-category="Sosial & Keagamaan" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-stone-700 border border-stone-300 hover:border-terracotta hover:text-terracotta transition cursor-pointer">
+                    Sosial &amp; Keagamaan
+                </button>
+                <button type="button" data-category="Sosial & Pembangunan" class="filter-btn px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-stone-700 border border-stone-300 hover:border-terracotta hover:text-terracotta transition cursor-pointer">
+                    Sosial &amp; Pembangunan
+                </button>
+            </div>
+
+            <!-- Grid Kartu Karya -->
+            <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Dirender oleh JavaScript -->
+            </div>
+
+            <!-- Empty State jika kategori kosong -->
+            <div id="empty-state" class="hidden text-center py-14 px-4 bg-white rounded-2xl border border-stone-200 mt-4">
+                <i data-lucide="file-text" class="w-10 h-10 text-stone-400 mx-auto mb-3"></i>
+                <h3 class="font-serif text-xl font-bold text-ink">Belum ada karya pada kategori ini</h3>
+                <p class="text-sm text-inkMuted mt-1">Silakan pilih kategori lain atau tampilkan semua karya.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOKUS LIPUTAN & KIPRAH ==================== -->
+    <section id="fokus" class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
+        <div class="max-w-6xl mx-auto">
+            <div class="max-w-2xl mb-12">
+                <span class="text-xs font-bold uppercase tracking-widest text-forest">Bidang Kajian &amp; Pengabdian</span>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-ink mt-1">Fokus Liputan &amp; Kiprah Daerah</h2>
+                <p class="text-inkMuted text-sm sm:text-base mt-2">
+                    Cakupan kerja jurnalistik di <strong>Mata Publik</strong> serta penguatan ekonomi petani dan pangan lokal bersama <strong>DPC HKTI Kabupaten Asmat</strong>.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Pilar 1 -->
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="w-11 h-11 rounded-xl bg-forest-soft text-forest flex items-center justify-center mb-4 border border-emerald-200">
+                            <i data-lucide="sprout" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-ink mb-2">Ekonomi Kerakyatan &amp; Pangan Lokal</h3>
+                        <p class="text-sm text-inkMuted leading-relaxed">
+                            Mengawal rantai pasok pertanian, peternakan, perikanan, pemberdayaan Poktan binaan, hingga akses pasokan hasil tani ke dapur MBG.
+                        </p>
+                    </div>
+                    <div class="mt-5 pt-3 border-t border-stone-100 text-xs font-semibold text-forest">
+                        Mata Publik &amp; DPC HKTI Asmat
+                    </div>
+                </div>
+
+                <!-- Pilar 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="w-11 h-11 rounded-xl bg-terracotta-soft text-terracotta flex items-center justify-center mb-4 border border-red-200">
+                            <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-ink mb-2">Sosial-Keagamaan</h3>
+                        <p class="text-sm text-inkMuted leading-relaxed">
+                            Mencatat denyut kehidupan rohani, keteladanan tokoh gereja dan masyarakat, serta solidaritas sosial di tanah rawa dan pesisir Asmat.
+                        </p>
+                    </div>
+                    <div class="mt-5 pt-3 border-t border-stone-100 text-xs font-semibold text-terracotta">
+                        Dokumentasi &amp; Humaniora
+                    </div>
+                </div>
+
+                <!-- Pilar 3 -->
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="w-11 h-11 rounded-xl bg-amber-50 text-earth flex items-center justify-center mb-4 border border-amber-200">
+                            <i data-lucide="shield" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-ink mb-2">Sosial &amp; Pembangunan Wilayah</h3>
+                        <p class="text-sm text-inkMuted leading-relaxed">
+                            Melaporkan program pembinaan masyarakat, edukasi sekolah seperti disiplin dan anti-perundungan, serta dinamika pembangunan daerah.
+                        </p>
+                    </div>
+                    <div class="mt-5 pt-3 border-t border-stone-100 text-xs font-semibold text-earth">
+                        Pelayanan Publik &amp; Pendidikan
+                    </div>
+                </div>
+
+                <!-- Pilar 4 -->
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="w-11 h-11 rounded-xl bg-stone-100 text-ink flex items-center justify-center mb-4 border border-stone-300">
+                            <i data-lucide="anchor" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-ink mb-2">Pesisir &amp; Perairan Asmat</h3>
+                        <p class="text-sm text-inkMuted leading-relaxed">
+                            Menjangkau kampung dan distrik di wilayah pesisir serta perairan Kabupaten Asmat, Papua Selatan, agar suara warga didengar luas.
+                        </p>
+                    </div>
+                    <div class="mt-5 pt-3 border-t border-stone-100 text-xs font-semibold text-inkMuted">
+                        Papua Selatan
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== KONTAK & KOLABORASI WHATSAPP ==================== -->
+    <section id="kontak" class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-paperDark/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                <!-- Info Kontak Langsung -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-terracotta">Komunikasi Langsung</span>
+                        <h2 class="font-display text-3xl sm:text-4xl font-bold text-ink mt-1">Kontak &amp; Undangan Liputan</h2>
+                        <p class="text-inkMuted text-sm sm:text-base mt-3 leading-relaxed">
+                            Untuk informasi liputan berita di <strong>Mata Publik</strong>, koordinasi kelompok tani &amp; ketahanan pangan di <strong>DPC HKTI Kabupaten Asmat</strong>, atau agenda kegiatan sosial-kemasyarakatan, silakan hubungi melalui WhatsApp.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs space-y-4">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-forest-soft text-forest flex items-center justify-center shrink-0 border border-emerald-200">
+                                <i data-lucide="phone" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold uppercase tracking-wider text-inkMuted">Nomor WhatsApp Resmi</div>
+                                <a href="https://wa.me/6281357691710" target="_blank" rel="noopener noreferrer" class="text-lg font-bold text-ink hover:text-forest transition">
+                                    0813-5769-1710
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-terracotta-soft text-terracotta flex items-center justify-center shrink-0 border border-red-200">
+                                <i data-lucide="newspaper" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold uppercase tracking-wider text-inkMuted">Media &amp; Organisasi</div>
+                                <p class="text-sm font-semibold text-ink">Jurnalis Mata Publik &bull; Wakil Sekretaris DPC HKTI Kabupaten Asmat</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-earth flex items-center justify-center shrink-0 border border-amber-200">
+                                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold uppercase tracking-wider text-inkMuted">Domisili &amp; Wilayah Liputan</div>
+                                <p class="text-sm font-semibold text-ink">Kabupaten Asmat, Provinsi Papua Selatan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulir Kirim Pesan ke WhatsApp -->
+                <div class="lg:col-span-7">
+                    <form id="wa-contact-form" onsubmit="sendWhatsAppMessage(event)" class="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200 shadow-sm space-y-5">
+                        <h3 class="font-serif text-2xl font-bold text-ink">Kirim Pesan via WhatsApp</h3>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="wa-sender-name" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1.5">Nama Anda / Instansi *</label>
+                                <input id="wa-sender-name" type="text" required placeholder="Contoh: Yohanes / Poktan Asmat"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-stone-300 bg-paper focus:bg-white focus:outline-none focus:border-terracotta text-sm">
+                            </div>
+                            <div>
+                                <label for="wa-sender-topic" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1.5">Keperluan / Topik</label>
+                                <select id="wa-sender-topic" class="w-full px-4 py-2.5 rounded-xl border border-stone-300 bg-paper focus:bg-white focus:outline-none focus:border-terracotta text-sm">
+                                    <option value="Liputan Berita / Informasi Daerah">Liputan Berita / Informasi Daerah</option>
+                                    <option value="Ketahanan Pangan & HKTI Asmat">Ketahanan Pangan &amp; HKTI Asmat</option>
+                                    <option value="Undangan Kegiatan / Sosial-Keagamaan">Undangan Kegiatan / Sosial-Keagamaan</option>
+                                    <option value="Kerja Sama / Pertanyaan Umum">Kerja Sama / Pertanyaan Umum</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="wa-sender-message" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1.5">Isi Pesan *</label>
+                            <textarea id="wa-sender-message" rows="4" required placeholder="Tuliskan detail liputan, lokasi, tanggal, atau pesan yang ingin disampaikan..."
+                                      class="w-full px-4 py-2.5 rounded-xl border border-stone-300 bg-paper focus:bg-white focus:outline-none focus:border-terracotta text-sm"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-forest hover:bg-forest-light text-white px-6 py-3.5 rounded-xl font-semibold text-sm sm:text-base shadow-sm transition cursor-pointer">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Kirim ke WhatsApp (0813-5769-1710)</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="bg-ink text-stone-300 py-10 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <div>
+                <div class="font-display text-lg font-bold text-white">Eduardus Andri Sukmajati</div>
+                <p class="text-xs text-stone-400 mt-0.5">
+                    Jurnalis Mata Publik &bull; Wakil Sekretaris DPC HKTI Kabupaten Asmat, Papua Selatan
+                </p>
+            </div>
+            <div class="text-xs text-stone-400">
+                &copy; <span id="footer-year">2026</span> Eduardus Andri Sukmajati. Seluruh hak cipta dilindungi.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MODAL 1: BACA DETAIL KARYA ==================== -->
+    <div id="article-modal" class="fixed inset-0 z-50 hidden bg-ink/65 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-paper w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-stone-300 shadow-2xl p-6 sm:p-8 animate-fade-in">
+            <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone-200">
+                <div class="space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="modal-category-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-terracotta-soft text-terracotta border border-red-200">Kategori</span>
+                        <span id="modal-media-date" class="text-xs font-semibold text-inkMuted">Mata Publik (November 2026)</span>
+                    </div>
+                    <h3 id="modal-title" class="font-serif text-2xl sm:text-3xl font-bold text-ink leading-snug">Judul Artikel</h3>
+                    <p id="modal-theme" class="text-xs sm:text-sm font-semibold text-forest"></p>
+                </div>
+                <button type="button" onclick="closeArticleModal()" aria-label="Tutup modal" class="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200/70 transition cursor-pointer shrink-0">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="modal-body" class="py-5 space-y-4 text-stone-800 text-sm sm:text-base leading-relaxed">
+                <!-- Paragraf ringkasan dirender JS -->
+            </div>
+
+            <div class="pt-4 border-t border-stone-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="copyArticleCitation()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-stone-100 text-stone-700 border border-stone-300 transition cursor-pointer">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        <span>Salin Judul &amp; Tautan</span>
+                    </button>
+                    <button id="modal-delete-btn" type="button" onclick="deleteCurrentModalArticle()" class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-50 hover:bg-red-100 text-terracotta border border-red-200 transition cursor-pointer">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Hapus Karya</span>
+                    </button>
+                </div>
+
+                <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-terracotta hover:bg-terracotta-dark text-white shadow-sm transition">
+                    <span>Baca Artikel Asli di Mata Publik</span>
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 2: TAMBAH KARYA BARU ==================== -->
+    <div id="add-article-modal" class="fixed inset-0 z-50 hidden bg-ink/65 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-paper w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-stone-300 shadow-2xl p-6 sm:p-7 animate-fade-in">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-200 mb-5">
+                <h3 class="font-serif text-2xl font-bold text-ink">Tambah Karya Jurnalistik</h3>
+                <button type="button" onclick="closeAddModal()" aria-label="Tutup" class="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200/70 transition cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="add-article-form" onsubmit="saveNewArticle(event)" class="space-y-4">
+                <div>
+                    <label for="new-title" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1">Judul Artikel / Berita *</label>
+                    <input id="new-title" type="text" required placeholder="Masukkan judul berita..."
+                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-terracotta">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label for="new-media-date" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1">Media &amp; Tanggal Terbit</label>
+                        <input id="new-media-date" type="text" value="Mata Publik (November 2026)"
+                               class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-terracotta">
+                    </div>
+                    <div>
+                        <label for="new-category" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1">Kategori</label>
+                        <select id="new-category" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-terracotta">
+                            <option value="Ekonomi & Pangan">Ekonomi &amp; Pangan</option>
+                            <option value="Sosial & Keagamaan">Sosial &amp; Keagamaan</option>
+                            <option value="Sosial & Pembangunan">Sosial &amp; Pembangunan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="new-theme" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1">Fokus Isu / Tema Utama</label>
+                    <input id="new-theme" type="text" placeholder="Contoh: Ketahanan Pangan & Pemberdayaan Poktan"
+                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-terracotta">
+                </div>
+
+                <div>
+                    <label for="new-url" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1">Alamat Tautan (Link URL)</label>
+                    <input id="new-url" type="url" placeholder="https://www.mata-publik.net/..."
+                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-terracotta">
+                </div>
+
+                <div>
+                    <label for="new-summary" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1">Ringkasan Liputan *</label>
+                    <textarea id="new-summary" rows="3" required placeholder="Tuliskan ringkasan berita..."
+                              class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-terracotta"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2.5">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-white border border-stone-300 text-stone-700 hover:bg-stone-100 transition cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-terracotta hover:bg-terracotta-dark text-white shadow-sm transition cursor-pointer">
+                        Simpan Karya
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 3: UBAH FOTO PROFIL ==================== -->
+    <div id="photo-modal" class="fixed inset-0 z-50 hidden bg-ink/65 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-paper w-full max-w-md rounded-2xl border border-stone-300 shadow-2xl p-6 animate-fade-in">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-200 mb-4">
+                <h3 class="font-serif text-xl font-bold text-ink">Ubah Foto Profil</h3>
+                <button type="button" onclick="closePhotoModal()" aria-label="Tutup" class="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200/70 transition cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="photo-file-input" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1.5">Unggah Foto dari Perangkat</label>
+                    <input id="photo-file-input" type="file" accept="image/*" onchange="handlePhotoUpload(event)"
+                           class="w-full text-xs text-stone-700 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-forest file:text-white hover:file:bg-forest-light cursor-pointer">
+                </div>
+
+                <div>
+                    <label for="photo-url-input" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1.5">Atau Tempel URL Gambar</label>
+                    <div class="flex gap-2">
+                        <input id="photo-url-input" type="url" placeholder="https://contoh.com/foto.jpg"
+                               class="flex-1 px-3.5 py-2 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-terracotta">
+                        <button type="button" onclick="applyPhotoUrl()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-terracotta hover:bg-terracotta-dark text-white transition cursor-pointer">
+                            Pakai
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-stone-200 flex justify-between items-center">
+                    <button type="button" onclick="resetPhotoDefault()" class="text-xs font-semibold text-terracotta hover:underline cursor-pointer">
+                        Reset ke Foto Bawaan
+                    </button>
+                    <button type="button" onclick="closePhotoModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-stone-300 text-stone-700 hover:bg-stone-100 cursor-pointer">
+                        Selesai
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 4: KONFIRMASI HAPUS KARYA ==================== -->
+    <div id="delete-modal" class="fixed inset-0 z-50 hidden bg-ink/65 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-paper w-full max-w-md rounded-2xl border border-stone-300 shadow-2xl p-6 animate-fade-in">
+            <h3 class="font-serif text-xl font-bold text-ink mb-2">Hapus Karya Jurnalistik?</h3>
+            <p class="text-sm text-inkMuted mb-2">Karya berikut akan dihapus dari daftar:</p>
+            <p id="delete-target-title" class="font-serif text-base font-bold text-terracotta bg-terracotta-soft p-3 rounded-xl border border-red-200 mb-5"></p>
+            <div class="flex justify-end gap-2.5">
+                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-stone-300 text-stone-700 hover:bg-stone-100 cursor-pointer">
+                    Batal
+                </button>
+                <button type="button" onclick="confirmDeleteArticle()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-terracotta hover:bg-terracotta-dark text-white cursor-pointer">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 5: PULIHKAN 4 KARYA BAWAAN ==================== -->
+    <div id="reset-articles-modal" class="fixed inset-0 z-50 hidden bg-ink/65 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-paper w-full max-w-md rounded-2xl border border-stone-300 shadow-2xl p-6 animate-fade-in">
+            <h3 class="font-serif text-xl font-bold text-ink mb-2">Pulihkan 4 Karya Bawaan?</h3>
+            <p class="text-sm text-inkMuted mb-5">
+                Daftar karya akan dikembalikan ke 4 karya jurnalistik resmi dari <strong>Mata Publik (November 2026)</strong>.
+            </p>
+            <div class="flex justify-end gap-2.5">
+                <button type="button" onclick="closeResetArticlesModal()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-stone-300 text-stone-700 hover:bg-stone-100 cursor-pointer">
+                    Batal
+                </button>
+                <button type="button" onclick="confirmResetArticles()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-forest hover:bg-forest-light text-white cursor-pointer">
+                    Pulihkan Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL 6: KUNCI PIN ADMIN & GANTI PIN ==================== -->
+    <div id="pin-modal" class="fixed inset-0 z-50 hidden bg-ink/65 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-paper w-full max-w-sm rounded-2xl border border-stone-300 shadow-2xl p-6 animate-fade-in">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-200 mb-4">
+                <h3 id="pin-modal-title" class="font-serif text-xl font-bold text-ink">Kunci PIN Admin</h3>
+                <button type="button" onclick="closePinModal()" aria-label="Tutup" class="p-2 rounded-xl text-stone-500 hover:text-ink hover:bg-stone-200/70 transition cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="pin-form" onsubmit="handlePinSubmit(event)" class="space-y-4">
+                <div id="pin-verify-field">
+                    <label for="pin-input" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1.5">
+                        Masukkan PIN Admin 
+                    </label>
+                    <input id="pin-input" type="password" inputmode="numeric" maxlength="12" placeholder="Masukkan PIN..."
+                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-forest">
+                </div>
+
+                <div id="pin-change-field" class="hidden">
+                    <label for="new-pin-input" class="block text-xs font-bold uppercase tracking-wider text-inkMuted mb-1.5">
+                        PIN Baru (Minimal 4 karakter/angka)
+                    </label>
+                    <input id="new-pin-input" type="password" inputmode="numeric" maxlength="12" placeholder="Contoh: 2027"
+                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm focus:outline-none focus:border-forest">
+                </div>
+
+                <p id="pin-error-msg" class="hidden text-xs font-semibold text-terracotta"></p>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePinModal()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-stone-300 text-stone-700 hover:bg-stone-100 cursor-pointer">
+                        Batal
+                    </button>
+                    <button id="pin-submit-btn" type="submit" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-forest hover:bg-forest-light text-white cursor-pointer">
+                        Buka Mode Admin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT UTAMA ==================== -->
+    <script>
+        const DEFAULT_PIN = '2026';
+        const WA_NUMBER '081357691710';
+        const DEFAULT_PHOTO = 'https://placehold.co/600x750/1B4332/FAF8F5?text=Eduardus+Andri+Sukmajati%0AJurnalis+Mata+Publik';
+
+        const STORAGE_KEYS = {
+            ARTICLES: 'andri_editorial_articles_v1',
+            PROFILE: 'andri_editorial_profile_v1',
+            PHOTO: 'andri_editorial_photo_v1',
+            PIN: 'andri_editorial_pin_v1',
+            ADMIN_UNLOCKED: 'andri_editorial_admin_v1'
+        };
+
+        const DEFAULT_PROFILE = {
+            location: 'Kabupaten Asmat, Papua Selatan',
+            name: 'Eduardus Andri Sukmajati',
+            role: 'Jurnalis Mata Publik & Wakil Sekretaris DPC HKTI Kabupaten Asmat',
+            bio: 'Eduardus Andri Sukmajati adalah seorang jurnalis media Mata Publik yang aktif meliput isu-isu pembangunan daerah, ekonomi kerakyatan, ketahanan pangan, serta dinamika sosial-kemasyarakatan di wilayah pesisir dan perairan Kabupaten Asmat, Papua Selatan. Selain mendedikasikan diri di dunia jurnalistik, ia juga aktif dalam penguatan sektor pertanian dan pangan lokal sebagai Wakil Sekretaris DPC Himpunan Kerukunan Tani Indonesia (HKTI) Kabupaten Asmat.',
+            focusSummary: 'Ekonomi Kerakyatan, Ketahanan Pangan Lokal, Sosial-Keagamaan, & Pembangunan Wilayah (Kabupaten Asmat, Papua Selatan)'
+        };
+
+        const DEFAULT_ARTICLES = [
+            {
+                id: 'artikel-1',
+                title: 'HKTI Asmat Dorong Optimalisasi Rantai Pasok Pertanian, Peternakan, Perikanan, dan Pangan Lokal',
+                mediaDate: 'Mata Publik (November 2026)',
+                category: 'Ekonomi & Pangan',
+                theme: 'Optimalisasi Rantai Pasok & Ekonomi Pertanian',
+                url: 'https://www.mata-publik.net/2026/11/hkti-asmat-dorong-optimalisasi-rantai.html',
+                summary: 'Dorongan penguatan rantai pasok sektor pertanian, peternakan, perikanan, dan pangan lokal di Kabupaten Asmat guna memperkokoh ekonomi kerakyatan serta kemandirian pangan daerah.',
+                paragraphs: [
+                    'Dorongan penguatan rantai pasok sektor pertanian, peternakan, perikanan, dan pangan lokal di Kabupaten Asmat guna memperkokoh ekonomi kerakyatan serta kemandirian pangan daerah.',
+                    'Laporan ini menyoroti pentingnya keterpaduan jalur distribusi hasil komoditas lokal mulai dari sentra produksi di wilayah pesisir dan perairan Asmat hingga ke pasar maupun penyerapan kebutuhan daerah.',
+                    'Melalui penguatan kelembagaan tani dan kolaborasi lintas pihak, optimalisasi rantai pasok diharapkan memberikan nilai tambah yang berkelanjutan bagi masyarakat.'
+                ]
+            },
+            {
+                id: 'artikel-2',
+                title: 'MGR. ALOYSIUS MURWITO, OFM: GEMBALA DARI TANAH RAWA TELAH BERPULANG',
+                mediaDate: 'Mata Publik (November 2026)',
+                category: 'Sosial & Keagamaan',
+                theme: 'Sosial keagamaan',
+                url: 'https://www.mata-publik.net/2026/11/mgr-aloysius-murwito-ofm-gembala-dari.html',
+                summary: 'Warta duka dan penghormatan atas dedikasi serta pelayanan pastoral Mgr. Aloysius Murwito, OFM dalam mendampingi umat dan masyarakat di tanah rawa Kabupaten Asmat, Papua Selatan.',
+                paragraphs: [
+                    'Warta duka dan penghormatan atas dedikasi serta pelayanan pastoral Mgr. Aloysius Murwito, OFM dalam mendampingi umat dan masyarakat di tanah rawa Kabupaten Asmat, Papua Selatan.',
+                    'Sepanjang karya pelayanannya, beliau dikenal dekat dengan umat, memperhatikan pendidikan dan kehidupan sosial masyarakat, serta setia menyapa warga di wilayah perairan dan rawa.',
+                    'Kepergian beliau meninggalkan jejak keteladanan pelayanan dan persaudaraan yang mendalam bagi masyarakat Asmat.'
+                ]
+            },
+            {
+                id: 'artikel-3',
+                title: 'HKTI ASMAT GANDENG SPPG PASAR DOLOG, BUKA AKSES PASAR BAGI POKTAN BINAAN UNTUK PASOK HASIL TANI KE DAPUR MBG',
+                mediaDate: 'Mata Publik (November 2026)',
+                category: 'Ekonomi & Pangan',
+                theme: 'Rantai Pasok Pangan Lokal, Pemberdayaan Poktan, & Program MBG',
+                url: 'https://www.mata-publik.net/2026/11/hkti-asmat-gandeng-sppg-pasar-dolog.html',
+                summary: 'Kolaborasi DPC HKTI Kabupaten Asmat bersama SPPG Pasar Dolog membuka akses penyerapan hasil tani bagi Kelompok Tani (Poktan) binaan untuk memasok bahan pangan ke dapur Makan Bergizi Gratis (MBG).',
+                paragraphs: [
+                    'Kolaborasi DPC HKTI Kabupaten Asmat bersama SPPG Pasar Dolog membuka akses penyerapan hasil tani bagi Kelompok Tani (Poktan) binaan untuk memasok bahan pangan ke dapur Makan Bergizi Gratis (MBG).',
+                    'Akses pasar langsung ini menjadi dorongan nyata bagi petani lokal agar hasil panen memiliki kepastian serap sekaligus mendukung pemenuhan pangan bergizi bagi peserta didik dan masyarakat.',
+                    'Sinergi ini memperkuat rantai pasok pangan lokal serta pemberdayaan ekonomi Poktan di Kabupaten Asmat.'
+                ]
+            },
+            {
+                id: 'artikel-4',
+                title: 'Kapolsek Sawa Erma Kunjungi SD YPPK Kristus Amore, Edukasi Siswa tentang Disiplin dan Anti-Perundungan',
+                mediaDate: 'Mata Publik (November 2026)',
+                category: 'Sosial & Pembangunan',
+                theme: 'Wujud Program Polisi Bersama Masyarakat',
+                url: 'https://www.mata-publik.net/2026/11/kapolsek-sawa-erma-kunjungi-sd-yppk.html',
+                summary: 'Kunjungan edukatif Kapolsek Sawa Erma ke SD YPPK Kristus Amore memberikan pembinaan kepada siswa mengenai pentingnya disiplin belajar serta pencegahan perundungan di sekolah.',
+                paragraphs: [
+                    'Kunjungan edukatif Kapolsek Sawa Erma ke SD YPPK Kristus Amore memberikan pembinaan kepada siswa mengenai pentingnya disiplin belajar serta pencegahan perundungan di sekolah.',
+                    'Kegiatan ini menjadi bagian dari pendekatan Polisi Bersama Masyarakat untuk membangun kesadaran sejak dini tentang sikap saling menghormati, tertib aturan, dan menolak segala bentuk perundungan.',
+                    'Langkah preventif bersama pihak sekolah ini mendukung terciptanya lingkungan belajar yang aman dan kondusif bagi anak-anak di Sawa Erma, Kabupaten Asmat.'
+                ]
+            }
+        ];
+
+        let state = {
+            articles: [],
+            profile: { ...DEFAULT_PROFILE },
+            photo: DEFAULT_PHOTO,
+            pin: DEFAULT_PIN,
+            isAdminUnlocked: false,
+            isEditingProfile: false,
+            activeCategory: 'Semua',
+            activeModalArticleId: null,
+            pendingDeleteArticleId: null,
+            pinModalMode: 'verify'
+        };
+
+        let toastTimeout = null;
+
+        function safeGet(key) {
+            try { return localStorage.getItem(key); } catch (e) { return null; }
+        }
+
+        function safeSet(key, val) {
+            try { localStorage.setItem(key, val); return true; } catch (e) { return false; }
+        }
+
+        function safeRemove(key) {
+            try { localStorage.removeItem(key); } catch (e) {}
+        }
+
+        function escapeHtml(text) {
+            return String(text || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function normalizeUrl(url) {
+            const trimmed = String(url || '').trim();
+            if (!trimmed) return '';
+            if (/^https?:\/\//i.test(trimmed)) return trimmed;
+            if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(trimmed)) return 'https://' + trimmed;
+            return '';
+        }
+
+        function refreshIcons() {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        }
+
+        function showToast(message, isError) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+            if (!toast || !msgEl) return;
+
+            msgEl.textContent = message;
+            if (iconEl) {
+                iconEl.setAttribute('data-lucide', isError ? 'alert-circle' : 'check-circle');
+                iconEl.className = isError
+                    ? 'w-5 h-5 text-red-400 shrink-0'
+                    : 'w-5 h-5 text-emerald-400 shrink-0';
+            }
+
+            toast.classList.remove('hidden');
+            refreshIcons();
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3200);
+        }
+
+        function loadState() {
+            const savedArticles = safeGet(STORAGE_KEYS.ARTICLES);
+            if (savedArticles) {
+                try {
+                    const parsed = JSON.parse(savedArticles);
+                    state.articles = Array.isArray(parsed) ? parsed : DEFAULT_ARTICLES.slice();
+                } catch (e) {
+                    state.articles = DEFAULT_ARTICLES.slice();
+                }
+            } else {
+                state.articles = DEFAULT_ARTICLES.slice();
+            }
+
+            const savedProfile = safeGet(STORAGE_KEYS.PROFILE);
+            if (savedProfile) {
+                try {
+                    const parsedProf = JSON.parse(savedProfile);
+                    state.profile = { ...DEFAULT_PROFILE, ...(parsedProf || {}) };
+                } catch (e) {
+                    state.profile = { ...DEFAULT_PROFILE };
+                }
+            }
+
+            const savedPhoto = safeGet(STORAGE_KEYS.PHOTO);
+            if (savedPhoto && (savedPhoto.startsWith('data:image/') || /^https?:\/\//i.test(savedPhoto))) {
+                state.photo = savedPhoto;
+            } else {
+                state.photo = DEFAULT_PHOTO;
+            }
+
+            const savedPin = safeGet(STORAGE_KEYS.PIN);
+            state.pin = (savedPin && savedPin.trim().length >= 4) ? savedPin.trim() : DEFAULT_PIN;
+
+            state.isAdminUnlocked = safeGet(STORAGE_KEYS.ADMIN_UNLOCKED) === 'true';
+        }
+
+        function renderAdminUI() {
+            const pinLabel = document.getElementById('admin-pin-label');
+            const pinIcon = document.getElementById('admin-pin-icon');
+            const toggleEditBtn = document.getElementById('toggle-edit-btn');
+            const adminBanner = document.getElementById('admin-panel-banner');
+            const photoCameraBtn = document.getElementById('admin-photo-camera-btn');
+            const photoLinkBtn = document.getElementById('admin-photo-link-btn');
+            const visitorCaption = document.getElementById('visitor-photo-caption');
+            const addArticleBtn = document.getElementById('add-article-btn');
+            const resetArticlesBtn = document.getElementById('reset-articles-btn');
+
+            if (state.isAdminUnlocked) {
+                if (pinLabel) pinLabel.textContent = 'Admin Aktif';
+                if (pinIcon) pinIcon.setAttribute('data-lucide', 'unlock');
+                if (toggleEditBtn) toggleEditBtn.classList.remove('hidden');
+                if (adminBanner) adminBanner.classList.remove('hidden');
+                if (photoCameraBtn) photoCameraBtn.classList.remove('hidden');
+                if (photoLinkBtn) photoLinkBtn.classList.remove('hidden');
+                if (visitorCaption) visitorCaption.classList.add('hidden');
+                if (addArticleBtn) addArticleBtn.classList.remove('hidden');
+                if (resetArticlesBtn) resetArticlesBtn.classList.remove('hidden');
+            } else {
+                state.isEditingProfile = false;
+                if (pinLabel) pinLabel.textContent = 'Kunci PIN Admin';
+                if (pinIcon) pinIcon.setAttribute('data-lucide', 'lock');
+                if (toggleEditBtn) toggleEditBtn.classList.add('hidden');
+                if (adminBanner) adminBanner.classList.add('hidden');
+                if (photoCameraBtn) photoCameraBtn.classList.add('hidden');
+                if (photoLinkBtn) photoLinkBtn.classList.add('hidden');
+                if (visitorCaption) visitorCaption.classList.remove('hidden');
+                if (addArticleBtn) addArticleBtn.classList.add('hidden');
+                if (resetArticlesBtn) resetArticlesBtn.classList.add('hidden');
+            }
+
+            renderProfile();
+            renderArticles();
+            refreshIcons();
+        }
+
+        function handleAdminButtonClick() {
+            if (state.isAdminUnlocked) {
+                const banner = document.getElementById('admin-panel-banner');
+                if (banner) banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                showToast('Mode Admin sedang aktif.');
+            } else {
+                openPinModal('verify');
+            }
+        }
+
+        function openPinModal(mode) {
+            state.pinModalMode = mode || 'verify';
+            const modal = document.getElementById('pin-modal');
+            const title = document.getElementById('pin-modal-title');
+            const verifyField = document.getElementById('pin-verify-field');
+            const changeField = document.getElementById('pin-change-field');
+            const pinInput = document.getElementById('pin-input');
+            const newPinInput = document.getElementById('new-pin-input');
+            const errEl = document.getElementById('pin-error-msg');
+            const submitBtn = document.getElementById('pin-submit-btn');
+
+            if (errEl) {
+                errEl.textContent = '';
+                errEl.classList.add('hidden');
+            }
+            if (pinInput) pinInput.value = '';
+            if (newPinInput) newPinInput.value = '';
+
+            if (state.pinModalMode === 'change') {
+                if (title) title.textContent = 'Ganti PIN Admin';
+                if (verifyField) verifyField.classList.add('hidden');
+                if (changeField) changeField.classList.remove('hidden');
+                if (submitBtn) submitBtn.textContent = 'Simpan PIN Baru';
+                if (modal) modal.classList.remove('hidden');
+                if (newPinInput) newPinInput.focus();
+            } else {
+                if (title) title.textContent = 'Verifikasi PIN Admin';
+                if (verifyField) verifyField.classList.remove('hidden');
+                if (changeField) changeField.classList.add('hidden');
+                if (submitBtn) submitBtn.textContent = 'Buka Mode Admin';
+                if (modal) modal.classList.remove('hidden');
+                if (pinInput) pinInput.focus();
+            }
+        }
+
+        function closePinModal() {
+            const modal = document.getElementById('pin-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function handlePinSubmit(e) {
+            e.preventDefault();
+            const errEl = document.getElementById('pin-error-msg');
+
+            if (state.pinModalMode === 'change') {
+                const newPinVal = ((document.getElementById('new-pin-input') || {}).value || '').trim();
+                if (newPinVal.length < 4) {
+                    if (errEl) {
+                        errEl.textContent = 'PIN baru minimal 4 karakter atau angka.';
+                        errEl.classList.remove('hidden');
+                    }
+                    return;
+                }
+                state.pin = newPinVal;
+                safeSet(STORAGE_KEYS.PIN, newPinVal);
+                closePinModal();
+                showToast('PIN Admin berhasil diperbarui.');
+            } else {
+                const entered = ((document.getElementById('pin-input') || {}).value || '').trim();
+                if (entered === state.pin) {
+                    state.isAdminUnlocked = true;
+                    safeSet(STORAGE_KEYS.ADMIN_UNLOCKED, 'true');
+                    closePinModal();
+                    renderAdminUI();
+                    showToast('Mode Admin terbuka.');
+                } else if (errEl) {
+                    errEl.textContent = 'PIN salah. Coba lagi atau gunakan PIN bawaan 2026.';
+                    errEl.classList.remove('hidden');
+                }
+            }
+        }
+
+        function lockAdminMode() {
+            state.isAdminUnlocked = false;
+            state.isEditingProfile = false;
+            safeSet(STORAGE_KEYS.ADMIN_UNLOCKED, 'false');
+            renderAdminUI();
+            showToast('Mode Admin dikunci. Tampilan kembali ke Mode Pengunjung.');
+        }
+
+        function renderProfile() {
+            const locEl = document.getElementById('editable-location');
+            const nameEl = document.getElementById('editable-name');
+            const roleEl = document.getElementById('editable-role');
+            const bioEl = document.getElementById('editable-bio');
+            const focusEl = document.getElementById('editable-focus-summary');
+            const imgEl = document.getElementById('profile-photo-img');
+            const editBanner = document.getElementById('edit-mode-banner');
+            const editLabel = document.getElementById('edit-btn-label');
+
+            if (locEl) locEl.textContent = state.profile.location;
+            if (nameEl) nameEl.textContent = state.profile.name;
+            if (roleEl) roleEl.textContent = state.profile.role;
+            if (bioEl) bioEl.textContent = state.profile.bio;
+            if (focusEl) focusEl.textContent = state.profile.focusSummary;
+
+            if (imgEl) {
+                imgEl.src = state.photo || DEFAULT_PHOTO;
+            }
+
+            const fields = [locEl, nameEl, roleEl, bioEl, focusEl];
+            const canEdit = state.isAdminUnlocked && state.isEditingProfile;
+            fields.forEach((el) => {
+                if (el) el.contentEditable = canEdit ? 'true' : 'false';
+            });
+
+            if (editBanner) {
+                editBanner.classList.toggle('hidden', !canEdit);
+            }
+            if (editLabel) {
+                editLabel.textContent = canEdit ? 'Simpan Profil' : 'Edit Profil';
+            }
+        }
+
+        function toggleEditMode() {
+            if (!state.isAdminUnlocked) {
+                openPinModal('verify');
+                return;
+            }
+
+            if (!state.isEditingProfile) {
+                state.isEditingProfile = true;
+                renderProfile();
+                showToast('Mode edit profil aktif. Klik teks yang ingin diubah lalu klik Simpan Profil.');
+            } else {
+                state.isEditingProfile = false;
+                state.profile = {
+                    location: ((document.getElementById('editable-location') || {}).textContent || DEFAULT_PROFILE.location).trim(),
+                    name: ((document.getElementById('editable-name') || {}).textContent || DEFAULT_PROFILE.name).trim(),
+                    role: ((document.getElementById('editable-role') || {}).textContent || DEFAULT_PROFILE.role).trim(),
+                    bio: ((document.getElementById('editable-bio') || {}).textContent || DEFAULT_PROFILE.bio).trim(),
+                    focusSummary: ((document.getElementById('editable-focus-summary') || {}).textContent || DEFAULT_PROFILE.focusSummary).trim()
+                };
+                safeSet(STORAGE_KEYS.PROFILE, JSON.stringify(state.profile));
+                renderProfile();
+                showToast('Perubahan profil tersimpan.');
+            }
+        }
+
+        function resetProfileEdits() {
+            if (!state.isAdminUnlocked) return;
+            state.profile = { ...DEFAULT_PROFILE };
+            state.isEditingProfile = false;
+            safeRemove(STORAGE_KEYS.PROFILE);
+            renderProfile();
+            showToast('Profil dikembalikan ke teks resmi bawaan.');
+        }
+
+        function handlePhotoClick() {
+            if (state.isAdminUnlocked) {
+                openPhotoModal();
+            }
+        }
+
+        function openPhotoModal() {
+            if (!state.isAdminUnlocked) {
+                openPinModal('verify');
+                return;
+            }
+            const modal = document.getElementById('photo-modal');
+            const urlInput = document.getElementById('photo-url-input');
+            if (urlInput) urlInput.value = '';
+            if (modal) modal.classList.remove('hidden');
+            refreshIcons();
+        }
+
+        function closePhotoModal() {
+            const modal = document.getElementById('photo-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function savePhoto(url) {
+            state.photo = url || DEFAULT_PHOTO;
+            safeSet(STORAGE_KEYS.PHOTO, state.photo);
+            renderProfile();
+            showToast('Foto profil diperbarui.');
+        }
+
+        function handlePhotoUpload(e) {
+            if (!state.isAdminUnlocked) return;
+            const file = e.target && e.target.files && e.target.files[0];
+            if (!file) return;
+
+            if (!file.type || !file.type.startsWith('image/')) {
+                showToast('Silakan pilih file gambar (JPG, PNG, atau WebP).', true);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const raw = evt.target && evt.target.result;
+                if (!raw) return;
+
+                const img = new Image();
+                img.onload = function () {
+                    try {
+                        const maxW = 700;
+                        const scale = img.width > maxW ? maxW / img.width : 1;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.round(img.width * scale);
+                        canvas.height = Math.round(img.height * scale);
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            savePhoto(canvas.toDataURL('image/jpeg', 0.84));
+                            closePhotoModal();
+                            return;
+                        }
+                    } catch (err) {}
+                    savePhoto(raw);
+                    closePhotoModal();
+                };
+                img.onerror = function () {
+                    savePhoto(raw);
+                    closePhotoModal();
+                };
+                img.src = raw;
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        function applyPhotoUrl() {
+            if (!state.isAdminUnlocked) return;
+            const input = document.getElementById('photo-url-input');
+            const valid = normalizeUrl(input && input.value);
+            if (!valid) {
+                showToast('Masukkan URL gambar yang valid (http:// atau https://).', true);
+                return;
+            }
+            savePhoto(valid);
+            closePhotoModal();
+        }
+
+        function resetPhotoDefault() {
+            if (!state.isAdminUnlocked) return;
+            safeRemove(STORAGE_KEYS.PHOTO);
+            savePhoto(DEFAULT_PHOTO);
+            closePhotoModal();
+        }
+
+        function renderArticles() {
+            const grid = document.getElementById('articles-grid');
+            const emptyState = document.getElementById('empty-state');
+            if (!grid) return;
+
+            const filtered = state.activeCategory === 'Semua'
+                ? state.articles
+                : state.articles.filter((a) => a.category === state.activeCategory);
+
+            if (!filtered.length) {
+                grid.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                refreshIcons();
+                return;
+            }
+
+            if (emptyState) emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map((article, idx) => {
+                const safeUrl = normalizeUrl(article.url);
+                const deleteBtnHtml = state.isAdminUnlocked
+                    ? `<button type="button" onclick="openDeleteModal('${escapeHtml(article.id)}')" title="Hapus karya" class="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold bg-red-50 hover:bg-red-100 text-terracotta border border-red-200 transition cursor-pointer">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Hapus</span>
+                       </button>`
+                    : '';
+
+                const externalLinkHtml = safeUrl
+                    ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3.5 py-2 rounded-xl text-xs font-semibold bg-paper hover:bg-paperDark text-ink border border-stone-300 transition">
+                            <span>Mata Publik</span>
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                       </a>`
+                    : '';
+
+                return `
+                    <article class="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs hover:shadow-md transition flex flex-col justify-between gap-5">
+                        <div>
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-terracotta-soft text-terracotta border border-red-200">
+                                    ${escapeHtml(article.category || 'Liputan')}
+                                </span>
+                                <span class="text-xs font-semibold text-inkMuted">
+                                    #${idx + 1} &bull; ${escapeHtml(article.mediaDate || 'Mata Publik (November 2026)')}
+                                </span>
+                            </div>
+
+                            <h3 onclick="openArticleModal('${escapeHtml(article.id)}')" class="font-serif text-xl sm:text-2xl font-bold text-ink leading-snug hover:text-terracotta transition cursor-pointer mb-2">
+                                ${escapeHtml(article.title)}
+                            </h3>
+
+                            <p class="text-xs font-semibold text-forest mb-3">
+                                Fokus Isu: ${escapeHtml(article.theme || '-')}
+                            </p>
+
+                            <p class="text-sm text-inkMuted leading-relaxed line-clamp-3">
+                                ${escapeHtml(article.summary || '')}
+                            </p>
+                        </div>
+
+                        <div class="pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2">
+                            <button type="button" onclick="openArticleModal('${escapeHtml(article.id)}')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-ink hover:bg-stone-800 text-white transition cursor-pointer">
+                                <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                                <span>Baca Ringkasan</span>
+                            </button>
+
+                            <div class="flex flex-wrap items-center gap-2">
+                                ${externalLinkHtml}
+                                ${deleteBtnHtml}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            refreshIcons();
+        }
+
+        function openArticleModal(articleId) {
+            const article = state.articles.find((a) => a.id === articleId);
+            if (!article) return;
+
+            state.activeModalArticleId = article.id;
+
+            const modal = document.getElementById('article-modal');
+            const catBadge = document.getElementById('modal-category-badge');
+            const mediaDate = document.getElementById('modal-media-date');
+            const titleEl = document.getElementById('modal-title');
+            const themeEl = document.getElementById('modal-theme');
+            const bodyEl = document.getElementById('modal-body');
+            const extLink = document.getElementById('modal-external-link');
+            const delBtn = document.getElementById('modal-delete-btn');
+
+            if (catBadge) catBadge.textContent = article.category || 'Liputan';
+            if (mediaDate) mediaDate.textContent = article.mediaDate || 'Mata Publik (November 2026)';
+            if (titleEl) titleEl.textContent = article.title;
+            if (themeEl) themeEl.textContent = 'Fokus Isu / Tema Utama: ' + (article.theme || '-');
+
+            const paragraphs = Array.isArray(article.paragraphs) && article.paragraphs.length
+                ? article.paragraphs
+                : [article.summary || ''];
+
+            if (bodyEl) {
+                bodyEl.innerHTML = paragraphs
+                    .filter(Boolean)
+                    .map((p) => `<p>${escapeHtml(p)}</p>`)
+                    .join('');
+            }
+
+            const safeUrl = normalizeUrl(article.url);
+            if (extLink) {
+                if (safeUrl) {
+                    extLink.href = safeUrl;
+                    extLink.classList.remove('hidden');
+                } else {
+                    extLink.href = '#';
+                    extLink.classList.add('hidden');
+                }
+            }
+
+            if (delBtn) {
+                delBtn.classList.toggle('hidden', !state.isAdminUnlocked);
+            }
+
+            if (modal) modal.classList.remove('hidden');
+            refreshIcons();
+        }
+
+        function closeArticleModal() {
+            const modal = document.getElementById('article-modal');
+            if (modal) modal.classList.add('hidden');
+            state.activeModalArticleId = null;
+        }
+
+        function copyArticleCitation() {
+            const article = state.articles.find((a) => a.id === state.activeModalArticleId);
+            if (!article) return;
+
+            const text = `${article.title} (${article.mediaDate || 'Mata Publik'}) - ${article.url || ''}`.trim();
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            tempInput.setAttribute('readonly', '');
+            tempInput.style.position = 'fixed';
+            tempInput.style.left = '-9999px';
+            document.body.appendChild(tempInput);
+            tempInput.select();
+
+            try {
+                document.execCommand('copy');
+                showToast('Judul dan tautan artikel berhasil disalin.');
+            } catch (e) {
+                showToast('Gagal menyalin teks.', true);
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function deleteCurrentModalArticle() {
+            if (!state.isAdminUnlocked || !state.activeModalArticleId) return;
+            openDeleteModal(state.activeModalArticleId);
+        }
+
+        function openAddModal() {
+            if (!state.isAdminUnlocked) {
+                openPinModal('verify');
+                return;
+            }
+            const modal = document.getElementById('add-article-modal');
+            if (modal) modal.classList.remove('hidden');
+            const titleInput = document.getElementById('new-title');
+            if (titleInput) titleInput.focus();
+            refreshIcons();
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-article-modal');
+            if (modal) modal.classList.add('hidden');
+            const form = document.getElementById('add-article-form');
+            if (form) form.reset();
+            const dateInput = document.getElementById('new-media-date');
+            if (dateInput) dateInput.value = 'Mata Publik (November 2026)';
+        }
+
+        function saveNewArticle(e) {
+            e.preventDefault();
+            if (!state.isAdminUnlocked) return;
+
+            const title = ((document.getElementById('new-title') || {}).value || '').trim();
+            const mediaDate = ((document.getElementById('new-media-date') || {}).value || 'Mata Publik (November 2026)').trim();
+            const category = ((document.getElementById('new-category') || {}).value || 'Ekonomi & Pangan').trim();
+            const theme = ((document.getElementById('new-theme') || {}).value || 'Liputan Daerah Asmat').trim();
+            const rawUrl = ((document.getElementById('new-url') || {}).value || '').trim();
+            const summary = ((document.getElementById('new-summary') || {}).value || '').trim();
+
+            if (!title || !summary) {
+                showToast('Judul dan ringkasan artikel wajib diisi.', true);
+                return;
+            }
+
+            const newArticle = {
+                id: 'artikel-' + Date.now(),
+                title,
+                mediaDate,
+                category,
+                theme,
+                url: normalizeUrl(rawUrl),
+                summary,
+                paragraphs: [summary]
+            };
+
+            state.articles.unshift(newArticle);
+            safeSet(STORAGE_KEYS.ARTICLES, JSON.stringify(state.articles));
+            closeAddModal();
+            renderArticles();
+            showToast('Karya jurnalistik baru ditambahkan.');
+        }
+
+        function openDeleteModal(articleId) {
+            if (!state.isAdminUnlocked) return;
+            const article = state.articles.find((a) => a.id === articleId);
+            if (!article) return;
+
+            state.pendingDeleteArticleId = article.id;
+            const modal = document.getElementById('delete-modal');
+            const targetEl = document.getElementById('delete-target-title');
+            if (targetEl) targetEl.textContent = article.title;
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('delete-modal');
+            if (modal) modal.classList.add('hidden');
+            state.pendingDeleteArticleId = null;
+        }
+
+        function confirmDeleteArticle() {
+            if (!state.isAdminUnlocked || !state.pendingDeleteArticleId) return;
+            state.articles = state.articles.filter((a) => a.id !== state.pendingDeleteArticleId);
+            safeSet(STORAGE_KEYS.ARTICLES, JSON.stringify(state.articles));
+            closeDeleteModal();
+            closeArticleModal();
+            renderArticles();
+            showToast('Karya jurnalistik dihapus.');
+        }
+
+        function openResetArticlesModal() {
+            if (!state.isAdminUnlocked) return;
+            const modal = document.getElementById('reset-articles-modal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeResetArticlesModal() {
+            const modal = document.getElementById('reset-articles-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function confirmResetArticles() {
+            if (!state.isAdminUnlocked) return;
+            state.articles = DEFAULT_ARTICLES.slice();
+            state.activeCategory = 'Semua';
+            safeSet(STORAGE_KEYS.ARTICLES, JSON.stringify(state.articles));
+
+            document.querySelectorAll('#category-filters .filter-btn').forEach((btn) => {
+                const isAll = btn.getAttribute('data-category') === 'Semua';
+                btn.classList.toggle('active', isAll);
+                btn.classList.toggle('bg-terracotta', isAll);
+                btn.classList.toggle('text-white', isAll);
+                btn.classList.toggle('bg-white', !isAll);
+                btn.classList.toggle('text-stone-700', !isAll);
+                btn.classList.toggle('border', !isAll);
+                btn.classList.toggle('border-stone-300', !isAll);
+            });
+
+            closeResetArticlesModal();
+            renderArticles();
+            showToast('4 karya jurnalistik bawaan berhasil dipulihkan.');
+        }
+
+        function sendWhatsAppMessage(e) {
+            e.preventDefault();
+            const name = ((document.getElementById('wa-sender-name') || {}).value || '').trim();
+            const topic = ((document.getElementById('wa-sender-topic') || {}).value || '').trim();
+            const message = ((document.getElementById('wa-sender-message') || {}).value || '').trim();
+
+            if (!name || !message) {
+                showToast('Mohon lengkapi nama dan isi pesan terlebih dahulu.', true);
+                return;
+            }
+
+            const composed = [
+                'Halo Mas Eduardus Andri Sukmajati,',
+                `Nama/Instansi: ${name}`,
+                `Topik: ${topic}`,
+                `Pesan: ${message}`
+            ].join('\n');
+
+            const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(composed)}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        function setupFiltersAndNavigation() {
+            document.querySelectorAll('#category-filters .filter-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const cat = btn.getAttribute('data-category') || 'Semua';
+                    state.activeCategory = cat;
+
+                    document.querySelectorAll('#category-filters .filter-btn').forEach((b) => {
+                        const active = b === btn;
+                        b.classList.toggle('active', active);
+                        b.classList.toggle('bg-terracotta', active);
+                        b.classList.toggle('text-white', active);
+                        b.classList.toggle('shadow-sm', active);
+                        b.classList.toggle('bg-white', !active);
+                        b.classList.toggle('text-stone-700', !active);
+                        b.classList.toggle('border', !active);
+                        b.classList.toggle('border-stone-300', !active);
+                    });
+
+                    renderArticles();
+                });
+            });
+
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                mobileMenu.querySelectorAll('a').forEach((link) => {
+                    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+                });
+            }
+
+            ['article-modal', 'add-article-modal', 'photo-modal', 'delete-modal', 'reset-articles-modal', 'pin-modal'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('click', (ev) => {
+                        if (ev.target === el) el.classList.add('hidden');
+                    });
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const yearEl = document.getElementById('footer-year');
+            if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+            loadState();
+            setupFiltersAndNavigation();
+            renderAdminUI();
+            refreshIcons();
+        });
+    </script>
+</body>
+</html>
+```
